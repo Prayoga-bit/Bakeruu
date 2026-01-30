@@ -8,3 +8,4 @@ export { default as OrderStep } from './OrderStep.svelte';
 export { default as FeeRow } from './FeeRow.svelte';
 export { default as InfoAlert } from './InfoAlert.svelte';
 export { default as PageHeader } from './PageHeader.svelte';
+export { default as Modal } from './Modal.svelte';

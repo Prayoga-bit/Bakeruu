@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Header, Footer } from '$lib/components/layout';
 	import { SearchInput, CategoryTabs } from '$lib/components/ui';
-	import { ProductCatalogCard } from '$lib/components/product';
+	import { ProductCatalogCard, ProductDetailModal } from '$lib/components/product';
 	import type { Product } from '$lib/types';
 
 	let { data } = $props();
@@ -9,6 +9,10 @@
 	// Client-side state for filtering
 	let searchQuery = $state('');
 	let selectedCategory = $state('All');
+
+	// Modal state
+	let selectedProduct = $state<Product | null>(null);
+	let isModalOpen = $state(false);
 
 	// Filtered products - computed on client side to avoid server roundtrips
 	const filteredProducts = $derived.by(() => {
@@ -38,9 +42,20 @@
 		selectedCategory = category;
 	}
 
+	function handleProductClick(product: Product) {
+		selectedProduct = product;
+		isModalOpen = true;
+	}
+
+	function handleCloseModal() {
+		isModalOpen = false;
+		selectedProduct = null;
+	}
+
 	function handleAddToCart(product: Product) {
 		// TODO: Implement cart functionality
 		console.log('Add to cart:', product.name);
+		handleCloseModal();
 	}
 </script>
 
@@ -98,7 +113,11 @@
 		{#if filteredProducts.length > 0}
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 				{#each filteredProducts as product (product.id)}
-					<ProductCatalogCard {product} onaddtocart={handleAddToCart} />
+					<ProductCatalogCard
+						{product}
+						onaddtocart={handleAddToCart}
+						onclick={() => handleProductClick(product)}
+					/>
 				{/each}
 			</div>
 		{:else}
@@ -109,6 +128,14 @@
 		{/if}
 	</div>
 </section>
+
+<!-- Product Detail Modal -->
+<ProductDetailModal
+	product={selectedProduct}
+	isOpen={isModalOpen}
+	onclose={handleCloseModal}
+	onAddToCart={handleAddToCart}
+/>
 
 <!-- Footer -->
 <Footer />

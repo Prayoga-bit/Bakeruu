@@ -6,9 +6,10 @@
 		product: Product;
 		class?: string;
 		onaddtocart?: (product: Product) => void;
+		onclick?: () => void;
 	}
 
-	let { product, class: className = '', onaddtocart }: Props = $props();
+	let { product, class: className = '', onaddtocart, onclick }: Props = $props();
 
 	const hasDiscount = $derived(product.hargaDiskon && product.hargaDiskon < product.harga);
 	const isOutOfStock = $derived(product.stok <= 0);
@@ -19,13 +20,21 @@
 			onaddtocart?.(product);
 		}
 	}
+
+	function handleClick() {
+		onclick?.();
+	}
 </script>
 
 <div
 	class="bg-[var(--color-gray-100)] rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] overflow-hidden flex flex-col {className}"
 >
 	<!-- Product Image -->
-	<a href="/products/{product.id}" class="block bg-white h-[300px] md:h-[350px] overflow-hidden">
+	<button
+		type="button"
+		onclick={handleClick}
+		class="block bg-white h-[300px] md:h-[350px] overflow-hidden cursor-pointer text-left w-full"
+	>
 		{#if product.image}
 			<img
 				src={product.image}
@@ -40,18 +49,18 @@
 				No Image
 			</div>
 		{/if}
-	</a>
+	</button>
 
 	<!-- Product Info -->
 	<div class="p-3 flex flex-col gap-2">
 		<!-- Name -->
-		<a href="/products/{product.id}" class="block">
+		<button type="button" onclick={handleClick} class="block text-left">
 			<h3
 				class="font-semibold text-lg md:text-xl text-[var(--color-gray-700)] line-clamp-1 hover:underline"
 			>
 				{product.name}
 			</h3>
-		</a>
+		</button>
 
 		<!-- Stock Status -->
 		<p class="text-[var(--color-accent)] text-sm md:text-base font-semibold">
