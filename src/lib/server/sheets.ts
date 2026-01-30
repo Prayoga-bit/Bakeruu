@@ -1,10 +1,14 @@
 import { google } from 'googleapis';
 import { GOOGLE_SHEET_ID, GOOGLE_API_KEY } from '$env/static/private';
 import type { Product, ProductRaw } from '$lib/types/product.js';
+import type { Testimonial } from '$lib/types/testimonial.js';
 
 // Change this to match your actual sheet tab name (visible at the bottom of Google Sheets)
 const SHEET_NAME = 'Katalog';
 const RANGE = `${SHEET_NAME}!A:I`;
+
+const TESTIMONI_SHEET_NAME = 'Testimoni';
+const TESTIMONI_RANGE = `${TESTIMONI_SHEET_NAME}!A:E`;
 
 // Column mapping based on your sheet structure:
 // A: id, B: name, C: deskripsi, D: kategori, E: harga, F: harga_diskon, G: stok, H: image, I: is_active
@@ -18,6 +22,15 @@ const COLUMN_INDEX = {
 	stok: 6,
 	image: 7,
 	is_active: 8
+} as const;
+
+// Testimoni column mapping: id, nama, tipe, bintang, komentar
+const TESTIMONI_COLUMN_INDEX = {
+	id: 0,
+	nama: 1,
+	tipe: 2,
+	bintang: 3,
+	komentar: 4
 } as const;
 
 function getSheets() {
@@ -174,5 +187,44 @@ export async function testConnection(): Promise<{
 			success: false,
 			message: `Connection failed: ${errorMessage}`
 		};
+	}
+}
+
+function rowToTestimonial(row: string[]): Testimonial {
+	return {
+		id: row[TESTIMONI_COLUMN_INDEX.id] || '',
+		nama: row[TESTIMONI_COLUMN_INDEX.nama] || '',
+		tipe: row[TESTIMONI_COLUMN_INDEX.tipe] || '',
+		bintang: parseNumber(row[TESTIMONI_COLUMN_INDEX.bintang]),
+		komentar: row[TESTIMONI_COLUMN_INDEX.komentar] || ''
+	};
+}
+
+export async function getTestimonials(): Promise<Testimonial[]> {
+	try {
+		const sheets = getSheets();
+		const response = await sheets.spreadsheets.values.get({
+			spreadsheetId: GOOGLE_SHEET_ID,
+			range: TESTIMONI_RANGE
+		});
+
+		const rows = response.data.values;
+		if (!rows || rows.length <= 1) {
+			console.log('[Sheets] No testimonials found in sheet');
+			return [];
+		}
+
+		// Skip header row (index 0), convert to testimonials
+		const testimonials = rows
+			.slice(1)
+			.map((row) => rowToTestimonial(row))
+			.filter((t) => t.id && t.nama);
+
+		console.log(`[Sheets] Loaded ${testimonials.length} testimonials`);
+		return testimonials;
+	} catch (error) {
+		console.error('[Sheets] Error fetching testimonials:', error);
+		// Return empty array instead of throwing to not break the page
+		return [];
 	}
 }

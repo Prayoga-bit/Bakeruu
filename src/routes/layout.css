@@ -1,2 +1,59 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+/* Bakeruu Color Variables */
+:root {
+	/* Primary Colors */
+	--color-primary: #9e3216;
+	--color-primary-dark: #7a2710;
+	--color-primary-light: #c94420;
+
+	/* Accent Colors */
+	--color-accent: #ff3030;
+	--color-accent-hover: #ea0000;
+	--color-accent-light: #ffa4a4;
+	--color-accent-lighter: rgba(255, 164, 164, 0.15);
+
+	/* Neutral Colors */
+	--color-white: #ffffff;
+	--color-black: #1b1b1b;
+	--color-gray-100: #f6f6f6;
+	--color-gray-200: #f5f5f5;
+	--color-gray-300: #e5e5e5;
+	--color-gray-600: #4a4a4a;
+	--color-gray-700: #2f2f2f;
+	--color-gray-800: #121212;
+
+	/* Brand Colors */
+	--color-cream: #ffddc8;
+	--color-cream-light: #fef5f1;
+
+	/* Shadows */
+	--shadow-sm: 0px 2px 4px rgba(0, 0, 0, 0.1);
+	--shadow-md: 0px 4px 8px rgba(0, 0, 0, 0.25);
+	--shadow-lg: 0px 2px 8px rgba(0, 0, 0, 0.25);
+	--shadow-card: 0px 5px 8px rgba(0, 0, 0, 0.1), 0px 2px 5px rgba(0, 0, 0, 0.1);
+
+	/* Border Radius */
+	--radius-sm: 5px;
+	--radius-md: 12px;
+	--radius-lg: 20px;
+	--radius-full: 9999px;
+
+	/* Font Family */
+	--font-brand: 'Fruktur', cursive;
+	--font-primary: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fruktur&display=swap');
+
+/* Base Styles */
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: var(--font-primary);
+	color: var(--color-black);
+	background-color: var(--color-white);
+}
