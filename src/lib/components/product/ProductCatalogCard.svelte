@@ -15,7 +15,8 @@
 	const isOutOfStock = $derived(product.stok <= 0);
 	const isLowStock = $derived(product.stok > 0 && product.stok <= 10);
 
-	function handleAddToCart() {
+	function handleAddToCart(event: MouseEvent) {
+		event.stopPropagation();
 		if (!isOutOfStock) {
 			onaddtocart?.(product);
 		}

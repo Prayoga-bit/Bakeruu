@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import type { Product } from '$lib/types';
 	import { Button } from '$lib/components/ui';
-	import { ProductGrid } from '$lib/components/product';
+	import { ProductGrid, AddToCartOverlay } from '$lib/components/product';
 	import { TestimonialList } from '$lib/components/testimonial';
 	import { Header, Footer } from '$lib/components/layout';
 
@@ -10,6 +11,22 @@
 	import bakeryBucketsImage from '$lib/assets/bakery-buckets.png';
 
 	let { data }: { data: PageData } = $props();
+
+	// Add to cart overlay state
+	let cartProduct = $state<Product | null>(null);
+	let isCartOverlayOpen = $state(false);
+
+	function handleAddToCart(product: Product) {
+		cartProduct = product;
+		isCartOverlayOpen = true;
+	}
+
+	function handleConfirmAddToCart(product: Product, quantity: number) {
+		// TODO: Add to cart store
+		console.log('Added to cart:', product.name, 'x', quantity);
+		isCartOverlayOpen = false;
+		cartProduct = null;
+	}
 </script>
 
 <svelte:head>
@@ -129,7 +146,7 @@
 			Recommendations
 		</h2>
 
-		<ProductGrid products={data.featuredProducts} columns={4} />
+		<ProductGrid products={data.featuredProducts} columns={4} onaddtocart={handleAddToCart} />
 
 		<div class="flex justify-center mt-12">
 			<Button variant="outline" href="/products">
@@ -211,6 +228,14 @@
 		<TestimonialList testimonials={data.testimonials} />
 	</div>
 </section>
+
+<!-- Add to Cart Overlay -->
+<AddToCartOverlay
+	product={cartProduct}
+	isOpen={isCartOverlayOpen}
+	closable={false}
+	onconfirm={handleConfirmAddToCart}
+/>
 
 <!-- Footer -->
 <Footer />

@@ -6,12 +6,19 @@
 	interface Props {
 		product: Product;
 		class?: string;
+		onaddtocart?: (product: Product) => void;
 	}
 
-	let { product, class: className = '' }: Props = $props();
+	let { product, class: className = '', onaddtocart }: Props = $props();
 
 	const hasDiscount = $derived(product.hargaDiskon && product.hargaDiskon < product.harga);
 	const isOutOfStock = $derived(product.stok <= 0);
+
+	function handleAddToCart() {
+		if (!isOutOfStock) {
+			onaddtocart?.(product);
+		}
+	}
 </script>
 
 <div
@@ -61,7 +68,7 @@
 				</span>
 			</div>
 
-			<Button variant="primary" size="sm" disabled={isOutOfStock}>
+			<Button variant="primary" size="sm" disabled={isOutOfStock} onclick={handleAddToCart}>
 				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"
 					></path>

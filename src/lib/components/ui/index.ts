@@ -9,3 +9,5 @@ export { default as FeeRow } from './FeeRow.svelte';
 export { default as InfoAlert } from './InfoAlert.svelte';
 export { default as PageHeader } from './PageHeader.svelte';
 export { default as Modal } from './Modal.svelte';
+export { default as Overlay } from './Overlay.svelte';
+export { default as QuantitySelector } from './QuantitySelector.svelte';

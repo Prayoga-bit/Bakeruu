@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Header, Footer } from '$lib/components/layout';
 	import { SearchInput, CategoryTabs } from '$lib/components/ui';
-	import { ProductCatalogCard, ProductDetailModal } from '$lib/components/product';
+	import { ProductCatalogCard, ProductDetailModal, AddToCartOverlay } from '$lib/components/product';
 	import type { Product } from '$lib/types';
 
 	let { data } = $props();
@@ -10,9 +10,13 @@
 	let searchQuery = $state('');
 	let selectedCategory = $state('All');
 
-	// Modal state
+	// Modal state for product detail
 	let selectedProduct = $state<Product | null>(null);
 	let isModalOpen = $state(false);
+
+	// Overlay state for add to cart
+	let cartProduct = $state<Product | null>(null);
+	let isCartOverlayOpen = $state(false);
 
 	// Filtered products - computed on client side to avoid server roundtrips
 	const filteredProducts = $derived.by(() => {
@@ -53,9 +57,24 @@
 	}
 
 	function handleAddToCart(product: Product) {
-		// TODO: Implement cart functionality
-		console.log('Add to cart:', product.name);
+		// Close detail modal if open
 		handleCloseModal();
+		// Open add to cart overlay (non-closable)
+		cartProduct = product;
+		isCartOverlayOpen = true;
+	}
+
+	function handleConfirmAddToCart(product: Product, quantity: number) {
+		// TODO: Add to cart store
+		console.log('Added to cart:', product.name, 'x', quantity);
+		// Close overlay after confirmation
+		isCartOverlayOpen = false;
+		cartProduct = null;
+	}
+
+	function handleCloseCartOverlay() {
+		isCartOverlayOpen = false;
+		cartProduct = null;
 	}
 </script>
 
@@ -135,6 +154,14 @@
 	isOpen={isModalOpen}
 	onclose={handleCloseModal}
 	onAddToCart={handleAddToCart}
+/>
+
+<!-- Add to Cart Overlay (Non-closable - can only close via Confirm button) -->
+<AddToCartOverlay
+	product={cartProduct}
+	isOpen={isCartOverlayOpen}
+	closable={false}
+	onconfirm={handleConfirmAddToCart}
 />
 
 <!-- Footer -->

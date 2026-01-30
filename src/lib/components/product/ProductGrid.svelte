@@ -6,9 +6,10 @@
 		products: Product[];
 		columns?: 2 | 3 | 4;
 		class?: string;
+		onaddtocart?: (product: Product) => void;
 	}
 
-	let { products, columns = 4, class: className = '' }: Props = $props();
+	let { products, columns = 4, class: className = '', onaddtocart }: Props = $props();
 
 	const gridCols = {
 		2: 'grid-cols-1 sm:grid-cols-2',
@@ -20,7 +21,7 @@
 {#if products.length > 0}
 	<div class="grid {gridCols[columns]} gap-5 {className}">
 		{#each products as product (product.id)}
-			<ProductCard {product} />
+			<ProductCard {product} {onaddtocart} />
 		{/each}
 	</div>
 {:else}
