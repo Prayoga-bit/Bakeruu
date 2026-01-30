@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import Logo from './Logo.svelte';
 
 	interface NavItem {
 		label: string;
 		href: string;
-		active?: boolean;
 	}
 
 	interface Props {
@@ -15,12 +15,17 @@
 	let { variant = 'transparent', class: className = '' }: Props = $props();
 
 	const navItems: NavItem[] = [
-		{ label: 'Home', href: '/', active: true },
+		{ label: 'Home', href: '/' },
 		{ label: 'Products', href: '/products' },
 		{ label: 'Delivery', href: '/delivery' }
 	];
 
-	const bgClass = variant === 'transparent' ? 'bg-transparent' : 'bg-[var(--color-primary)]';
+	const bgClass = $derived(variant === 'transparent' ? 'bg-transparent' : 'bg-[var(--color-primary)]');
+
+	function isActive(href: string, pathname: string): boolean {
+		if (href === '/') return pathname === '/';
+		return pathname.startsWith(href);
+	}
 </script>
 
 <header class="fixed top-0 left-0 right-0 z-50 {bgClass} {className}">
@@ -35,7 +40,7 @@
 					<a
 						href={item.href}
 						class="text-[var(--color-cream)] text-xl font-black transition-colors hover:text-white
-							{item.active ? 'border-b-2 border-[var(--color-cream)]' : ''}"
+							{isActive(item.href, $page.url.pathname) ? 'border-b-2 border-[var(--color-cream)]' : ''}"
 					>
 						{item.label}
 					</a>
@@ -43,7 +48,11 @@
 			</div>
 
 			<!-- Cart Icon -->
-			<a href="/cart" class="text-[var(--color-cream)] hover:text-white transition-colors">
+			<a
+				href="/cart"
+				class="text-[var(--color-cream)] hover:text-white transition-colors"
+				aria-label="Shopping Cart"
+			>
 				<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
 						stroke-linecap="round"

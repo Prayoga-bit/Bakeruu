@@ -1,3 +1,10 @@
 export { default as Button } from './Button.svelte';
 export { default as StarRating } from './StarRating.svelte';
 export { default as Badge } from './Badge.svelte';
+export { default as SearchInput } from './SearchInput.svelte';
+export { default as CategoryTabs } from './CategoryTabs.svelte';
+export { default as InfoCard } from './InfoCard.svelte';
+export { default as OrderStep } from './OrderStep.svelte';
+export { default as FeeRow } from './FeeRow.svelte';
+export { default as InfoAlert } from './InfoAlert.svelte';
+export { default as PageHeader } from './PageHeader.svelte';

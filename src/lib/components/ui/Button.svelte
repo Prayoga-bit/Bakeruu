@@ -55,7 +55,7 @@
 		lg: 'px-6 py-4 text-lg rounded-[var(--radius-full)]'
 	};
 
-	const combinedClass = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
+	const combinedClass = $derived(`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`);
 </script>
 
 {#if href}
