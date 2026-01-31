@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Fruktur&display=swap');
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 /* Bakeruu Color Variables */
@@ -43,9 +44,6 @@
 	--font-brand: 'Fruktur', cursive;
 	--font-primary: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
-
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Fruktur&display=swap');
 
 /* Base Styles */
 html {

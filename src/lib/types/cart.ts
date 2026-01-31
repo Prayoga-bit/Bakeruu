@@ -14,6 +14,6 @@ export interface Cart {
 
 export interface CustomerInfo {
 	name: string;
+	phone: string;
 	address: string;
-	notes?: string;
 }

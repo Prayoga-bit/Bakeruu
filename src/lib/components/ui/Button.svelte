@@ -4,6 +4,7 @@
 	interface Props {
 		variant?: 'primary' | 'outline' | 'ghost' | 'cta';
 		size?: 'sm' | 'md' | 'lg';
+		type?: 'button' | 'submit' | 'reset';
 		href?: string;
 		disabled?: boolean;
 		class?: string;
@@ -14,6 +15,7 @@
 	let {
 		variant = 'primary',
 		size = 'md',
+		type = 'button',
 		href,
 		disabled = false,
 		class: className = '',
@@ -63,7 +65,7 @@
 		{@render children()}
 	</a>
 {:else}
-	<button type="button" {disabled} {onclick} class={combinedClass}>
+	<button {type} {disabled} {onclick} class={combinedClass}>
 		{@render children()}
 	</button>
 {/if}

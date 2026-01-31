@@ -1,10 +1,12 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import type { Product } from '$lib/types';
+	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui';
 	import { ProductGrid, AddToCartOverlay } from '$lib/components/product';
 	import { TestimonialList } from '$lib/components/testimonial';
 	import { Header, Footer } from '$lib/components/layout';
+	import { cartStore } from '$lib/stores/cart';
 
 	// Assets
 	import croissantImage from '$lib/assets/croissant.png';
@@ -22,10 +24,11 @@
 	}
 
 	function handleConfirmAddToCart(product: Product, quantity: number) {
-		// TODO: Add to cart store
-		console.log('Added to cart:', product.name, 'x', quantity);
+		cartStore.addItem(product, quantity);
 		isCartOverlayOpen = false;
 		cartProduct = null;
+		// Navigate to cart page
+		goto('/cart');
 	}
 </script>
 

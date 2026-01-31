@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Header, Footer } from '$lib/components/layout';
 	import { SearchInput, CategoryTabs } from '$lib/components/ui';
 	import { ProductCatalogCard, ProductDetailModal, AddToCartOverlay } from '$lib/components/product';
+	import { cartStore } from '$lib/stores/cart';
 	import type { Product } from '$lib/types';
 
 	let { data } = $props();
@@ -65,11 +67,12 @@
 	}
 
 	function handleConfirmAddToCart(product: Product, quantity: number) {
-		// TODO: Add to cart store
-		console.log('Added to cart:', product.name, 'x', quantity);
+		cartStore.addItem(product, quantity);
 		// Close overlay after confirmation
 		isCartOverlayOpen = false;
 		cartProduct = null;
+		// Navigate to cart page
+		goto('/cart');
 	}
 
 	function handleCloseCartOverlay() {
