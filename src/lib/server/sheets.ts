@@ -5,13 +5,13 @@ import type { Testimonial } from '$lib/types/testimonial.js';
 
 // Change this to match your actual sheet tab name (visible at the bottom of Google Sheets)
 const SHEET_NAME = 'Katalog';
-const RANGE = `${SHEET_NAME}!A:I`;
+const RANGE = `${SHEET_NAME}!A:J`;
 
 const TESTIMONI_SHEET_NAME = 'Testimoni';
 const TESTIMONI_RANGE = `${TESTIMONI_SHEET_NAME}!A:E`;
 
 // Column mapping based on your sheet structure:
-// A: id, B: name, C: deskripsi, D: kategori, E: harga, F: harga_diskon, G: stok, H: image, I: is_active
+// A: id, B: name, C: deskripsi, D: kategori, E: harga, F: harga_diskon, G: stok, H: image, I: is_active, J: best_seller
 const COLUMN_INDEX = {
 	id: 0,
 	name: 1,
@@ -21,7 +21,8 @@ const COLUMN_INDEX = {
 	harga_diskon: 5,
 	stok: 6,
 	image: 7,
-	is_active: 8
+	is_active: 8,
+	best_seller: 9
 } as const;
 
 // Testimoni column mapping: id, nama, tipe, bintang, komentar
@@ -114,7 +115,8 @@ function rowToProduct(row: string[]): Product {
 		hargaDiskon: hargaDiskon > 0 && hargaDiskon < harga ? hargaDiskon : undefined,
 		stok: parseNumber(row[COLUMN_INDEX.stok]),
 		image: parseImageUrl(row[COLUMN_INDEX.image]),
-		isActive: parseBoolean(row[COLUMN_INDEX.is_active])
+		isActive: parseBoolean(row[COLUMN_INDEX.is_active]),
+		isBestSeller: parseBoolean(row[COLUMN_INDEX.best_seller])
 	};
 }
 

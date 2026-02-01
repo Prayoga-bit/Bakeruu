@@ -15,6 +15,10 @@
 
 	let { product, isOpen = false, closable = true, onclose, onconfirm }: Props = $props();
 
+	function handleClose() {
+		onclose?.();
+	}
+
 	let quantity = $state(1);
 
 	// Reset quantity when product changes
@@ -39,7 +43,7 @@
 	}
 </script>
 
-<Overlay {isOpen} title="Add to Cart" {closable} {onclose} showCloseButton={closable}>
+<Overlay {isOpen} title="Add to Cart" closable={true} onclose={handleClose} showCloseButton={true}>
 	{#if product}
 		<div class="p-6 flex flex-col gap-6">
 			<!-- Product Info -->

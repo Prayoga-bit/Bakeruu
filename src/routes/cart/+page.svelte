@@ -47,9 +47,9 @@
 		<button
 			type="button"
 			onclick={view === 'checkout' ? handleBackToCart : handleBackToShopping}
-			class="flex items-center gap-2 text-[var(--color-accent)] font-semibold mb-8 hover:opacity-80 transition-opacity cursor-pointer"
+			class="flex items-center gap-2 text-[var(--color-accent)] text-sm sm:text-base font-semibold mb-6 sm:mb-8 hover:opacity-80 transition-opacity cursor-pointer"
 		>
-			<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
 			</svg>
 			{view === 'checkout' ? 'Back to Cart' : 'Back to Shopping'}
@@ -60,11 +60,11 @@
 			<EmptyCart onStartShopping={handleBackToShopping} />
 		{:else if view === 'checkout'}
 			<!-- Checkout View -->
-			<h1 class="text-4xl font-bold text-[var(--color-gray-700)] mb-8">
+			<h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-gray-700)] mb-6 sm:mb-8">
 				Checkout
 			</h1>
 
-			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
 				<!-- Customer Information Form -->
 				<CheckoutForm
 					items={cart.items}
@@ -77,11 +77,11 @@
 			</div>
 		{:else}
 			<!-- Cart View -->
-			<h1 class="text-4xl font-bold text-[var(--color-gray-700)] mb-8">
+			<h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-gray-700)] mb-6 sm:mb-8">
 				Shopping Cart
 			</h1>
 
-			<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 				<!-- Cart Items -->
 				<div class="lg:col-span-2 flex flex-col gap-4">
 					{#each cart.items as item (item.productId)}

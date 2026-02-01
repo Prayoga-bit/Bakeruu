@@ -89,18 +89,18 @@
 </script>
 
 <div
-	class="bg-[var(--color-gray-100)] rounded-2xl shadow-[0px_4px_6px_0px_rgba(0,0,0,0.1),0px_2px_4px_0px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-6"
+	class="bg-[var(--color-gray-100)] rounded-2xl shadow-[0px_4px_6px_0px_rgba(0,0,0,0.1),0px_2px_4px_0px_rgba(0,0,0,0.1)] p-4 sm:p-6 flex flex-col gap-4 sm:gap-6"
 >
 	<!-- Title -->
-	<h2 class="text-2xl font-bold text-[var(--color-gray-700)]">
+	<h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-gray-700)]">
 		Customer Information
 	</h2>
 
 	<!-- Form -->
-	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex flex-col gap-5">
+	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex flex-col gap-4 sm:gap-5">
 		<!-- Full Name -->
-		<div class="flex flex-col gap-2">
-			<label for="fullName" class="text-base font-semibold text-[var(--color-gray-700)]">
+		<div class="flex flex-col gap-1.5 sm:gap-2">
+			<label for="fullName" class="text-sm sm:text-base font-semibold text-[var(--color-gray-700)]">
 				Full Name <span class="text-[var(--color-accent)]">*</span>
 			</label>
 			<input
@@ -108,16 +108,16 @@
 				id="fullName"
 				bind:value={customerInfo.name}
 				placeholder="Enter your full name"
-				class="w-full px-4 py-3 border border-[#d1d5dc] rounded-[10px] text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
 			/>
 			{#if errors.name}
-				<p class="text-sm text-[var(--color-accent)]">{errors.name}</p>
+				<p class="text-xs sm:text-sm text-[var(--color-accent)]">{errors.name}</p>
 			{/if}
 		</div>
 
 		<!-- Phone Number -->
-		<div class="flex flex-col gap-2">
-			<label for="phone" class="text-base font-semibold text-[var(--color-gray-700)]">
+		<div class="flex flex-col gap-1.5 sm:gap-2">
+			<label for="phone" class="text-sm sm:text-base font-semibold text-[var(--color-gray-700)]">
 				Phone Number <span class="text-[var(--color-accent)]">*</span>
 			</label>
 			<input
@@ -125,16 +125,16 @@
 				id="phone"
 				bind:value={customerInfo.phone}
 				placeholder="08xxxxxxxxxx"
-				class="w-full px-4 py-3 border border-[#d1d5dc] rounded-[10px] text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
 			/>
 			{#if errors.phone}
-				<p class="text-sm text-[var(--color-accent)]">{errors.phone}</p>
+				<p class="text-xs sm:text-sm text-[var(--color-accent)]">{errors.phone}</p>
 			{/if}
 		</div>
 
 		<!-- Delivery Address -->
-		<div class="flex flex-col gap-2">
-			<label for="address" class="text-base font-semibold text-[var(--color-gray-700)]">
+		<div class="flex flex-col gap-1.5 sm:gap-2">
+			<label for="address" class="text-sm sm:text-base font-semibold text-[var(--color-gray-700)]">
 				Delivery Address <span class="text-[var(--color-accent)]">*</span>
 			</label>
 			<textarea
@@ -142,10 +142,10 @@
 				bind:value={customerInfo.address}
 				placeholder="Enter your complete delivery address"
 				rows="4"
-				class="w-full px-4 py-3 border border-[#d1d5dc] rounded-[10px] text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors resize-none"
+				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors resize-none"
 			></textarea>
 			{#if errors.address}
-				<p class="text-sm text-[var(--color-accent)]">{errors.address}</p>
+				<p class="text-xs sm:text-sm text-[var(--color-accent)]">{errors.address}</p>
 			{/if}
 		</div>
 

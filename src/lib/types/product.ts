@@ -8,6 +8,7 @@ export interface Product {
 	stok: number;
 	image: string;
 	isActive: boolean;
+	isBestSeller: boolean;
 }
 
 export interface ProductFilters {
@@ -26,4 +27,5 @@ export interface ProductRaw {
 	stok: string;
 	image: string;
 	is_active: string;
+	best_seller: string;
 }

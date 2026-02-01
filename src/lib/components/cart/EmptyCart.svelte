@@ -8,9 +8,9 @@
 	let { onStartShopping }: Props = $props();
 </script>
 
-<div class="flex flex-col items-center justify-center py-16 px-4">
+<div class="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
 	<!-- Empty Cart Icon -->
-	<div class="w-24 h-24 mb-6">
+	<div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mb-4 sm:mb-6">
 		<svg
 			viewBox="0 0 96 96"
 			fill="none"
@@ -24,12 +24,12 @@
 	</div>
 
 	<!-- Title -->
-	<h2 class="text-2xl font-bold text-[var(--color-gray-700)] mb-2">
+	<h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-gray-700)] mb-1.5 sm:mb-2">
 		Your cart is empty
 	</h2>
 
 	<!-- Description -->
-	<p class="text-base text-[#4a5565] mb-6">
+	<p class="text-sm sm:text-base text-[#4a5565] mb-4 sm:mb-6 text-center">
 		Add some delicious items to get started!
 	</p>
 
