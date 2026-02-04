@@ -74,17 +74,67 @@
 		return encodeURIComponent(message);
 	}
 
-	function handleSubmit() {
+	let isSubmitting = $state(false);
+	let submitError = $state<string | null>(null);
+
+	async function updateStock(): Promise<boolean> {
+		try {
+			const response = await fetch('/api/order', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					items: items.map((item) => ({
+						productId: item.productId,
+						quantity: item.quantity
+					}))
+				})
+			});
+
+			const result = await response.json();
+
+			if (!response.ok || !result.success) {
+				console.error('[Checkout] Stock update failed:', result);
+				// Continue with order even if stock update fails
+				// The admin will handle it manually
+				return false;
+			}
+
+			console.log('[Checkout] Stock updated successfully:', result);
+			return true;
+		} catch (error) {
+			console.error('[Checkout] Error updating stock:', error);
+			// Continue with order even if there's an error
+			return false;
+		}
+	}
+
+	async function handleSubmit() {
 		if (!validateForm()) return;
 
-		const message = generateWhatsAppMessage();
-		const whatsappUrl = `https://wa.me/${PUBLIC_WHATSAPP_ADMIN_PHONE}?text=${message}`;
+		isSubmitting = true;
+		submitError = null;
 
-		// Open WhatsApp in new tab
-		window.open(whatsappUrl, '_blank');
+		try {
+			// Update stock in Google Sheets
+			await updateStock();
 
-		// Trigger success callback
-		onSuccess?.();
+			// Generate WhatsApp message and open
+			const message = generateWhatsAppMessage();
+			const whatsappUrl = `https://wa.me/${PUBLIC_WHATSAPP_ADMIN_PHONE}?text=${message}`;
+
+			// Open WhatsApp in new tab
+			window.open(whatsappUrl, '_blank');
+
+			// Trigger success callback
+			onSuccess?.();
+		} catch (error) {
+			console.error('[Checkout] Error:', error);
+			submitError = 'Terjadi kesalahan. Silakan coba lagi.';
+		} finally {
+			isSubmitting = false;
+		}
 	}
 </script>
 
@@ -95,6 +145,13 @@
 	<h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-gray-700)]">
 		Customer Information
 	</h2>
+
+	<!-- Error Message -->
+	{#if submitError}
+		<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+			{submitError}
+		</div>
+	{/if}
 
 	<!-- Form -->
 	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex flex-col gap-4 sm:gap-5">
@@ -108,7 +165,8 @@
 				id="fullName"
 				bind:value={customerInfo.name}
 				placeholder="Enter your full name"
-				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+				disabled={isSubmitting}
+				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 			/>
 			{#if errors.name}
 				<p class="text-xs sm:text-sm text-[var(--color-accent)]">{errors.name}</p>
@@ -125,7 +183,8 @@
 				id="phone"
 				bind:value={customerInfo.phone}
 				placeholder="08xxxxxxxxxx"
-				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+				disabled={isSubmitting}
+				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 			/>
 			{#if errors.phone}
 				<p class="text-xs sm:text-sm text-[var(--color-accent)]">{errors.phone}</p>
@@ -142,7 +201,8 @@
 				bind:value={customerInfo.address}
 				placeholder="Enter your complete delivery address"
 				rows="4"
-				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors resize-none"
+				disabled={isSubmitting}
+				class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#d1d5dc] rounded-[10px] text-sm sm:text-base text-[var(--color-gray-800)] placeholder:text-[rgba(10,10,10,0.5)] focus:outline-none focus:border-[var(--color-accent)] transition-colors resize-none disabled:opacity-50 disabled:cursor-not-allowed"
 			></textarea>
 			{#if errors.address}
 				<p class="text-xs sm:text-sm text-[var(--color-accent)]">{errors.address}</p>
@@ -150,8 +210,18 @@
 		</div>
 
 		<!-- Submit Button -->
-		<Button type="submit" variant="primary" size="lg" class="w-full rounded-[14px]">
-			Send Order via WhatsApp
+		<Button type="submit" variant="primary" size="lg" class="w-full rounded-[14px]" disabled={isSubmitting}>
+			{#if isSubmitting}
+				<span class="flex items-center justify-center gap-2">
+					<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+						<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+					</svg>
+					Processing...
+				</span>
+			{:else}
+				Send Order via WhatsApp
+			{/if}
 		</Button>
 	</form>
 </div>

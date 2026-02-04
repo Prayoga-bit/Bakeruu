@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { GOOGLE_SHEET_ID, GOOGLE_API_KEY } from '$env/static/private';
+import { GOOGLE_SHEET_ID, GOOGLE_API_KEY, GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY } from '$env/static/private';
 import type { Product, ProductRaw } from '$lib/types/product.js';
 import type { Testimonial } from '$lib/types/testimonial.js';
 
@@ -34,11 +34,29 @@ const TESTIMONI_COLUMN_INDEX = {
 	komentar: 4
 } as const;
 
+// Read-only sheets client (using API key)
 function getSheets() {
 	return google.sheets({
 		version: 'v4',
 		auth: GOOGLE_API_KEY
 	});
+}
+
+// Read-write sheets client (using service account with JWT)
+function getSheetsWithAuth() {
+	// Check if service account credentials are available
+	if (!GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) {
+		throw new Error('Service account credentials not configured. Please add GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY to your .env file.');
+	}
+
+	// Use JWT client directly for service account authentication
+	const auth = new google.auth.JWT({
+		email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+		key: GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, '\n'),
+		scopes: ['https://www.googleapis.com/auth/spreadsheets']
+	});
+
+	return google.sheets({ version: 'v4', auth });
 }
 
 function parseNumber(value: string | undefined): number {
@@ -73,7 +91,7 @@ function parseImageUrl(value: string | undefined): string {
 	}
 
 	// Extract Google Drive file ID
-	let fileId = trimmed;
+	let fileId = '';
 
 	// Match: https://drive.google.com/file/d/{ID}/view or similar
 	const driveFileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
@@ -93,10 +111,15 @@ function parseImageUrl(value: string | undefined): string {
 		fileId = driveOpenMatch[1];
 	}
 
-	// If we have a file ID (either extracted or raw), convert to direct URL
-	if (fileId && !fileId.startsWith('http')) {
-		// Use lh3.googleusercontent.com for better image serving
-		return `https://lh3.googleusercontent.com/d/${fileId}`;
+	// If no match found but it looks like just an ID (alphanumeric with - and _)
+	if (!fileId && /^[a-zA-Z0-9_-]+$/.test(trimmed)) {
+		fileId = trimmed;
+	}
+
+	// If we have a file ID, convert to direct URL
+	if (fileId) {
+		// Try multiple formats - lh3 is more reliable for embedding
+		return `https://lh3.googleusercontent.com/d/${fileId}=s0`;
 	}
 
 	return trimmed;
@@ -228,5 +251,104 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 		console.error('[Sheets] Error fetching testimonials:', error);
 		// Return empty array instead of throwing to not break the page
 		return [];
+	}
+}
+
+interface StockUpdateItem {
+	productId: string;
+	quantity: number;
+}
+
+interface StockUpdateResult {
+	productId: string;
+	success: boolean;
+	message: string;
+	newStock?: number;
+}
+
+/**
+ * Decrease stock for multiple products after an order is placed.
+ * This function uses a service account to write to Google Sheets.
+ */
+export async function decreaseStock(items: StockUpdateItem[]): Promise<StockUpdateResult[]> {
+	const results: StockUpdateResult[] = [];
+
+	try {
+		const sheets = getSheetsWithAuth();
+
+		// First, get all current data to find row numbers
+		const response = await sheets.spreadsheets.values.get({
+			spreadsheetId: GOOGLE_SHEET_ID,
+			range: RANGE
+		});
+
+		const rows = response.data.values;
+		if (!rows || rows.length <= 1) {
+			return items.map((item) => ({
+				productId: item.productId,
+				success: false,
+				message: 'No products found in sheet'
+			}));
+		}
+
+		// Process each item
+		for (const item of items) {
+			try {
+				// Find the row index for this product (skip header, so +2 for 1-indexed sheet)
+				const rowIndex = rows.findIndex((row, index) => index > 0 && row[COLUMN_INDEX.id] === item.productId);
+
+				if (rowIndex === -1) {
+					results.push({
+						productId: item.productId,
+						success: false,
+						message: 'Product not found'
+					});
+					continue;
+				}
+
+				const currentRow = rows[rowIndex];
+				const currentStock = parseNumber(currentRow[COLUMN_INDEX.stok]);
+				const newStock = Math.max(0, currentStock - item.quantity);
+
+				// Update the stock cell (column G = index 6, but sheets use 1-indexed columns)
+				// Row number in sheet is rowIndex + 1 (since arrays are 0-indexed)
+				const stockCellRange = `${SHEET_NAME}!G${rowIndex + 1}`;
+
+				await sheets.spreadsheets.values.update({
+					spreadsheetId: GOOGLE_SHEET_ID,
+					range: stockCellRange,
+					valueInputOption: 'RAW',
+					requestBody: {
+						values: [[newStock]]
+					}
+				});
+
+				console.log(`[Sheets] Updated stock for ${item.productId}: ${currentStock} -> ${newStock}`);
+
+				results.push({
+					productId: item.productId,
+					success: true,
+					message: `Stock updated from ${currentStock} to ${newStock}`,
+					newStock
+				});
+			} catch (itemError) {
+				console.error(`[Sheets] Error updating stock for ${item.productId}:`, itemError);
+				results.push({
+					productId: item.productId,
+					success: false,
+					message: itemError instanceof Error ? itemError.message : 'Unknown error'
+				});
+			}
+		}
+
+		return results;
+	} catch (error) {
+		console.error('[Sheets] Error in decreaseStock:', error);
+		// Return failure for all items
+		return items.map((item) => ({
+			productId: item.productId,
+			success: false,
+			message: error instanceof Error ? error.message : 'Failed to connect to Google Sheets'
+		}));
 	}
 }
