@@ -116,7 +116,7 @@
 				{/if}
 
 				<!-- Add to Cart CTA - Centered below image -->
-				<div class="mt-6 sm:mt-8">
+				<div class="absolute mt-6 sm:mt-8 top-1/2 lg:translate-y-[-50%] md:translate-y-1/2 ">
 					<Button variant="cta" size="lg" onclick={handleHeroAddToCart} disabled={!hasBestSellers}>
 						<span>Add to cart</span>
 						<span
@@ -226,7 +226,7 @@
 <!-- Recommendations Section -->
 <section class="py-20 bg-white">
 	<div class="container mx-auto px-10">
-		<h2 class="text-4xl font-bold text-center text-[var(--color-black)] tracking-wide mb-12">
+		<h2 class="text-4xl md:text-3xl sm:text-2xl font-bold text-center text-[var(--color-black)] tracking-wide mb-12">
 			Recommendations
 		</h2>
 

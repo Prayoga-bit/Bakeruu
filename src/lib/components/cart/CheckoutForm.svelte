@@ -53,13 +53,13 @@
 			minute: '2-digit'
 		});
 
-		let message = `🛒 *PESANAN BARU BAKERUU*\n`;
-		message += `📅 ${orderDate}\n\n`;
-		message += `👤 *DATA PELANGGAN*\n`;
+		let message = `*PESANAN BARU BAKERUU*\n`;
+		message += `${orderDate}\n\n`;
+		message += `*DATA PELANGGAN*\n`;
 		message += `Nama: ${customerInfo.name}\n`;
 		message += `Telepon: ${customerInfo.phone}\n`;
 		message += `Alamat: ${customerInfo.address}\n\n`;
-		message += `📋 *DETAIL PESANAN*\n`;
+		message += `*DETAIL PESANAN*\n`;
 		message += `────────────────────\n`;
 
 		items.forEach((item, index) => {
@@ -68,8 +68,8 @@
 		});
 
 		message += `────────────────────\n`;
-		message += `💰 *TOTAL: ${formatRupiah(totalPrice)}*\n\n`;
-		message += `Terima kasih telah berbelanja di Bakeruu! 🧁`;
+		message += `*TOTAL: ${formatRupiah(totalPrice)}*\n\n`;
+		message += `Terima kasih telah berbelanja di Bakeruu!`;
 
 		return encodeURIComponent(message);
 	}
