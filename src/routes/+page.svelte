@@ -140,7 +140,7 @@
 		<div class="pb-8 sm:pb-12 flex flex-col lg:flex-row items-center lg:items-end justify-between gap-6 sm:gap-8">
 			<!-- Left: Description Text -->
 			<div class="text-[var(--color-accent-light)] lg:w-1/3 text-center lg:text-left">
-				<p class="text-base sm:text-xl leading-relaxed max-w-sm mx-auto lg:mx-0">
+				<p class="text-base sm:text-xl leading-relaxed max-w-sm mx-auto lg:mx-0 line-clamp-2">
 					{#if currentBestSeller}
 						{currentBestSeller.deskripsi || 'Kenyangkan perut kamu dengan produk terbaik kami'}
 					{:else}
